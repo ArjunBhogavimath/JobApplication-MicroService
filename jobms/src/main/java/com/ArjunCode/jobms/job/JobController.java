@@ -1,5 +1,6 @@
 package com.ArjunCode.jobms.job;
 
+import com.ArjunCode.jobms.job.dto.JobWithCompanyDTO;
 import com.ArjunCode.jobms.job.service.JobService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class JobController {
 
     //endpoint to return list of Jobs
     @GetMapping
-    public ResponseEntity<List<Job>> findAll(){
+    public ResponseEntity<List<JobWithCompanyDTO>> findAll(){
         return new ResponseEntity<>(jobService.findAll(), HttpStatus.OK);
     }
 

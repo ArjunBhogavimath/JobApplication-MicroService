@@ -1,11 +1,12 @@
 package com.ArjunCode.jobms.job.service;
 
 import com.ArjunCode.jobms.job.Job;
+import com.ArjunCode.jobms.job.dto.JobWithCompanyDTO;
 
 import java.util.List;
 
 public interface JobService {
-    List<Job> findAll();
+    List<JobWithCompanyDTO> findAll();
     void createJob(Job job);
 
     Job getJobById(Long id);
