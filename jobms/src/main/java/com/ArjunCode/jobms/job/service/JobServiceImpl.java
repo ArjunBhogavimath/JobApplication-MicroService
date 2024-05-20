@@ -3,14 +3,17 @@ package com.ArjunCode.jobms.job.service;
 
 import com.ArjunCode.jobms.job.Job;
 import com.ArjunCode.jobms.job.JobRepository;
-import com.ArjunCode.jobms.job.dto.JobWithCompanyDTO;
+import com.ArjunCode.jobms.job.dto.JobDTO;
 import com.ArjunCode.jobms.job.external.Company;
+import com.ArjunCode.jobms.job.external.Review;
 import com.ArjunCode.jobms.job.mapper.JobMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,17 +33,27 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public List<JobWithCompanyDTO> findAll() {
+    public List<JobDTO> findAll() {
         List<Job> jobs =  jobRepository.findAll();
         return jobs.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-    private JobWithCompanyDTO convertToDTO(Job job) {
+    private JobDTO convertToDTO(Job job) {
         Company company = restTemplate.getForObject("http://COMPANY-SERVICE:8081/companies/" + job.getCompanyId(), Company.class);
 
-        JobWithCompanyDTO jobWithCompanyDTO = JobMapper.mapToJobWithCompanyDTO(job,company);
-        jobWithCompanyDTO.setCompany(company);
-        return jobWithCompanyDTO;
+        //getForObject should be used when we are getting single object
+        //if in case of list we should use exchange
+
+        ResponseEntity<List<Review>> reviewResponse = restTemplate.exchange("http://REVIEW-SERVICE:8083/reviews?companyId=" + job.getCompanyId(),
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Review>>() { //This catches generic type info of expected response
+        });
+        List<Review> reviews = reviewResponse.getBody();
+
+        JobDTO jobDTO = JobMapper.mapToJobWithCompanyDTO(job,company, reviews);
+        //jobDTO.setCompany(company);
+        return jobDTO;
     }
 
     @Override
@@ -49,7 +62,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public JobWithCompanyDTO getJobById(Long id) {
+    public JobDTO getJobById(Long id) {
         Job job = jobRepository.findById(id).orElse(null);
         return convertToDTO(job);
     }

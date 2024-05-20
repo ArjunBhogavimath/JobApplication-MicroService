@@ -1,9 +1,11 @@
 package com.ArjunCode.jobms.job.dto;
 
-import com.ArjunCode.jobms.job.Job;
 import com.ArjunCode.jobms.job.external.Company;
+import com.ArjunCode.jobms.job.external.Review;
 
-public class JobWithCompanyDTO {
+import java.util.List;
+
+public class JobDTO {
     private Long id;
     private String title;
     private String description;
@@ -11,6 +13,7 @@ public class JobWithCompanyDTO {
     private String maxSalary;
     private String location;
     private Company company;
+    private List<Review> review;
 
     public Company getCompany() {
         return company;
@@ -66,5 +69,13 @@ public class JobWithCompanyDTO {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public List<Review> getReview() {
+        return review;
+    }
+
+    public void setReview(List<Review> review) {
+        this.review = review;
     }
 }
