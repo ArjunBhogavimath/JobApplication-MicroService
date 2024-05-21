@@ -3,6 +3,8 @@ package com.ArjunCode.jobms.job.service;
 
 import com.ArjunCode.jobms.job.Job;
 import com.ArjunCode.jobms.job.JobRepository;
+import com.ArjunCode.jobms.job.clients.CompanyClient;
+import com.ArjunCode.jobms.job.clients.ReviewClient;
 import com.ArjunCode.jobms.job.dto.JobDTO;
 import com.ArjunCode.jobms.job.external.Company;
 import com.ArjunCode.jobms.job.external.Review;
@@ -28,8 +30,14 @@ public class JobServiceImpl implements JobService {
     @Autowired
     RestTemplate restTemplate;
 
-    public JobServiceImpl(JobRepository jobRepository) {
+    private CompanyClient companyClient;
+
+    private ReviewClient reviewClient;
+
+    public JobServiceImpl(JobRepository jobRepository, CompanyClient companyClient, ReviewClient reviewClient) {
         this.jobRepository = jobRepository;
+        this.companyClient = companyClient;
+        this.reviewClient = reviewClient;
     }
 
     @Override
@@ -39,20 +47,10 @@ public class JobServiceImpl implements JobService {
     }
 
     private JobDTO convertToDTO(Job job) {
-        Company company = restTemplate.getForObject("http://COMPANY-SERVICE:8081/companies/" + job.getCompanyId(), Company.class);
-
-        //getForObject should be used when we are getting single object
-        //if in case of list we should use exchange
-
-        ResponseEntity<List<Review>> reviewResponse = restTemplate.exchange("http://REVIEW-SERVICE:8083/reviews?companyId=" + job.getCompanyId(),
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<Review>>() { //This catches generic type info of expected response
-        });
-        List<Review> reviews = reviewResponse.getBody();
+        Company company = companyClient.getCompany(job.getCompanyId());
+        List<Review> reviews = reviewClient.getReviews(job.getCompanyId());
 
         JobDTO jobDTO = JobMapper.mapToJobWithCompanyDTO(job,company, reviews);
-        //jobDTO.setCompany(company);
         return jobDTO;
     }
 

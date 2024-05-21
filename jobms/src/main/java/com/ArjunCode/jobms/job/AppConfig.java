@@ -14,4 +14,8 @@ public class AppConfig {
     public RestTemplate restTemplate(){
         return new RestTemplate();
     }
+
+    //Note :
+    //Only use this when we use restTemplate
+    //Now we moved our application from restTemplate to openFeign
 }
