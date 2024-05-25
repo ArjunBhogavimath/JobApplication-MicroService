@@ -10,6 +10,7 @@ import com.ArjunCode.jobms.job.external.Company;
 import com.ArjunCode.jobms.job.external.Review;
 import com.ArjunCode.jobms.job.mapper.JobMapper;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -36,6 +37,8 @@ public class JobServiceImpl implements JobService {
 
     private ReviewClient reviewClient;
 
+    int attempt = 0;
+
     public JobServiceImpl(JobRepository jobRepository, CompanyClient companyClient, ReviewClient reviewClient) {
         this.jobRepository = jobRepository;
         this.companyClient = companyClient;
@@ -43,8 +46,10 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    @CircuitBreaker(name="companyBreaker", fallbackMethod = "companyBreakerFallBack")
+    //@CircuitBreaker(name="companyBreaker", fallbackMethod = "companyBreakerFallBack")
+    @Retry(name = "companyBreaker", fallbackMethod = "companyBreakerFallBack")
     public List<JobDTO> findAll() {
+        System.out.println("Attempt------>"+ ++attempt);
         List<Job> jobs =  jobRepository.findAll();
         return jobs.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
