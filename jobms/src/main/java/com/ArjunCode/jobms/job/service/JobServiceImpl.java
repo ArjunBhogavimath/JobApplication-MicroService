@@ -9,6 +9,7 @@ import com.ArjunCode.jobms.job.dto.JobDTO;
 import com.ArjunCode.jobms.job.external.Company;
 import com.ArjunCode.jobms.job.external.Review;
 import com.ArjunCode.jobms.job.mapper.JobMapper;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -41,6 +42,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @CircuitBreaker(name="companyBreaker")
     public List<JobDTO> findAll() {
         List<Job> jobs =  jobRepository.findAll();
         return jobs.stream().map(this::convertToDTO).collect(Collectors.toList());
