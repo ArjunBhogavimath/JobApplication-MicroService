@@ -1,5 +1,7 @@
 package com.ArjunCode.companyms.company;
 
+import com.ArjunCode.companyms.company.dto.ReviewMessage;
+
 import java.util.List;
 
 public interface CompanyService {
@@ -12,4 +14,6 @@ public interface CompanyService {
     void createCompany(Company company);
 
     Company getCompany(Long id);
+
+    void updateCompanyRating(ReviewMessage reviewMessage);
 }
