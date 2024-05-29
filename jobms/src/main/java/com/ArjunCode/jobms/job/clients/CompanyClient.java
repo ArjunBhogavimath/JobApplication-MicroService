@@ -5,7 +5,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "COMPANY-SERVICE") //to configure this as feign client
+@FeignClient(name = "COMPANY-SERVICE",
+            url = "${company-service.url}") //to configure this as feign client
 public interface CompanyClient {
 
     //this will replace restTemplate
