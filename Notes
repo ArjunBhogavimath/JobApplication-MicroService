@@ -2,3 +2,14 @@ Message Queue :
 
 Review    Rating INfo     Message    Rating INfo       Company
 System     ---------->    Queue     ------------>      Service
+
+
+Containerization of microservices :
+
+commands :
+./mvnw spring-boot:build-image "-Dspring-boot.build-image.imageName=<your-dockerhub-username>/<your-image-name>"
+
+(example -> ./mvnw spring-boot:build-image "-Dspring-boot.build-image.imageName=arjunbhogavimath/servicereg")
+
+
+(Note :  "mvnw" is a maven wrapper used to containerize any spring boot application)
